@@ -52,7 +52,7 @@ public class Pelicula {
     public String toString() {
             return "-------------------------------\n" +
            "Titulo       : " + titulo + "\n" +
-           "Género       : " + genero + "\n" +
+           "Genero       : " + genero + "\n" +
            "Clasificacion: " + clasificacion + "\n" +
            "Sinopsis     : " + sinopsis + "\n" +
            "-------------------------------";

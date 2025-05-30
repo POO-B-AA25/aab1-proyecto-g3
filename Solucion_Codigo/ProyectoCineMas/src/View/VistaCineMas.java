@@ -35,7 +35,7 @@ public class VistaCineMas {
         Scanner scanner = new Scanner(System.in);
         boolean salir = false;
         System.out.println("========================================");
-        System.out.println("     Bienvenido al Sistema de CineMas   ");
+        System.out.println("            Sistema de CineMas           ");
         System.out.println("========================================");
 
         while (!salir) {
