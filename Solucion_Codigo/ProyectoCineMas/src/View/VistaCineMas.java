@@ -74,7 +74,6 @@ public class VistaCineMas {
             if (!salir) {
             }
         }
-        scanner.close();
     }
 
     void mostrarMenuPrincipal() {
