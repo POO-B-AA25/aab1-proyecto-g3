@@ -1,4 +1,5 @@
 # Proyecto bimestral de investigación y desarrollo
+## Estudiantes: Joel Domínguez Ochoa - Axel Román Torres
 
 ## Aplicar POO con estructuras de control/datos (arreglos estáticos/dinámicos), y serialización de archivos
 
