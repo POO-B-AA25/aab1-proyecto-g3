@@ -39,7 +39,7 @@ public class VistaCineMas {
     public static void main(String[] args) {
         VistaCineMas app = new VistaCineMas();
         app.cargarDatosIniciales();
-        app.crearEncabezadoCSVSIEsNecesario();
+        app.crearEncabezadoCSV();
 
         Scanner scanner = new Scanner(System.in);
         boolean salir = false;
@@ -102,7 +102,7 @@ public class VistaCineMas {
         }
     }
 
-    public void crearEncabezadoCSVSIEsNecesario() {
+    public void crearEncabezadoCSV() {
         File csvFile = new File(archivoRegistro);
         if (!csvFile.exists() || csvFile.length() == 0) {
             String encabezado = "FechaHoraTransaccion;TipoFactura;NumeroFactura;ClienteNombre;PeliculaTitulo;SalaNombre;HorarioFuncion;CantidadBoletos;PrecioUnitarioBoleto;SubtotalBoletos;PromocionDescripcion;DescuentoValor;SnackNombre;CantidadSnack;PrecioUnitarioSnack;SubtotalSnacks;TotalPagado";

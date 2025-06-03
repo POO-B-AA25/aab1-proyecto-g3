@@ -3,3 +3,4 @@ FechaHoraTransaccion;TipoFactura;NumeroFactura;ClienteNombre;PeliculaTitulo;Sala
 03/06/2025 09:34:22;FACTURA_SNACK;FS-1;Pedro Alvear;N/A;N/A;N/A;0;0.00;0.00;Ninguna;0.00;Hot Dog Clasico;2;3.00;6.00;6.00
 03/06/2025 09:47:59;FACTURA_SNACK;FS-1;Luis Guzman;N/A;N/A;N/A;0;0.00;0.00;Ninguna;0.00;Popcorn Grande;3;5.50;16.50;16.50
 03/06/2025 10:40:27;FACTURA_FUNCION;FF-1;Carlos Solis;Intensamente 2;Sala VIP;03/06/2025 18:00;2;8.50;17.00;Martes Loco 20%;3.40;N/A;0;0.00;0.00;13.60
+03/06/2025 15:05:17;FACTURA_FUNCION;FF-1;Jorge Luna;Kung Fu Panda 4;Sala IMAX;03/06/2025 16:30;3;8.50;25.50;Martes Loco 20%;5.10;N/A;0;0.00;0.00;20.40
