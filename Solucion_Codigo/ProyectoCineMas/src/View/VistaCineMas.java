@@ -34,7 +34,7 @@ public class VistaCineMas {
     SimpleDateFormat sdfDiaSemana = new SimpleDateFormat("EEEE", new Locale("es", "ES"));
     SimpleDateFormat sdfParaArchivo = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 
-    public static final String NOMBRE_ARCHIVO_CSV = "registro_ventas_cine.csv";
+    public static final String archivoRegistro = "registro_ventas_cine.csv";
 
     public static void main(String[] args) {
         VistaCineMas app = new VistaCineMas();
@@ -94,7 +94,7 @@ public class VistaCineMas {
     }
 
     private void escribirLineaEnCSV(String datosCSV) {
-        try (FileWriter fileWriter = new FileWriter(NOMBRE_ARCHIVO_CSV, true);
+        try (FileWriter fileWriter = new FileWriter(archivoRegistro, true);
              Formatter formatter = new Formatter(fileWriter)) {
             formatter.format("%s%n", datosCSV);
         } catch (IOException e) {
@@ -103,7 +103,7 @@ public class VistaCineMas {
     }
 
     public void crearEncabezadoCSVSIEsNecesario() {
-        File csvFile = new File(NOMBRE_ARCHIVO_CSV);
+        File csvFile = new File(archivoRegistro);
         if (!csvFile.exists() || csvFile.length() == 0) {
             String encabezado = "FechaHoraTransaccion;TipoFactura;NumeroFactura;ClienteNombre;PeliculaTitulo;SalaNombre;HorarioFuncion;CantidadBoletos;PrecioUnitarioBoleto;SubtotalBoletos;PromocionDescripcion;DescuentoValor;SnackNombre;CantidadSnack;PrecioUnitarioSnack;SubtotalSnacks;TotalPagado";
             escribirLineaEnCSV(encabezado);
@@ -207,7 +207,7 @@ public class VistaCineMas {
         if (!clientesDisponibles.isEmpty()) {
             Random rand = new Random();
             clienteDeLaTransaccion = clientesDisponibles.get(rand.nextInt(clientesDisponibles.size()));
-            System.out.println("Transaccion para el cliente (seleccionado aleatoriamente): " + clienteDeLaTransaccion.getNombreApellidoCliente());
+            System.out.println("Transaccion para el cliente: " + clienteDeLaTransaccion.getNombreApellidoCliente());
         } else {
             System.out.println("Error: No hay clientes registrados. Por favor, agregue clientes primero.");
             return;
@@ -334,7 +334,7 @@ public class VistaCineMas {
             System.out.println("Descuento ("+ promocionDescCSV +"): -$" + String.format(Locale.US, "%.2f", descuentoValorCSV));
         }
         System.out.println("Valor Total: $" + String.format(Locale.US, "%.2f", totalPagadoCSV));
-        System.out.println("Factura registrada en: " + NOMBRE_ARCHIVO_CSV);
+        System.out.println("Factura registrada en: " + archivoRegistro);
     }
 
     public void comprarSnacks(Scanner scanner) {
@@ -435,11 +435,11 @@ public class VistaCineMas {
         System.out.println("Cantidad: " + factura.getSnack().getCantidad());
         System.out.println("Precio Unitario: $" + String.format(Locale.US, "%.2f", factura.getSnack().getPrecio()));
         System.out.println("Valor Total: $" + String.format(Locale.US, "%.2f", totalPagadoCSV));
-        System.out.println("Factura registrada en: " + NOMBRE_ARCHIVO_CSV);
+        System.out.println("Factura registrada en: " + archivoRegistro);
     }
 
     public void verRegistroDeVentas() {
-        System.out.println("\n--- REGISTRO DE VENTAS (Desde Memoria) ---");
+        System.out.println("\n--- REGISTRO DE VENTAS ---");
 
         List<FacturaFuncion> facturasFuncion = facturaControlador.obtenerFacturasFuncion();
         List<FacturaSnack> facturasSnack = facturaControlador.obtenerFacturasSnack();
@@ -502,17 +502,17 @@ public class VistaCineMas {
             System.out.println("Ingresos Totales (Boletos + Snacks): $" + String.format(Locale.US, "%.2f", (ingresosTotalesPorBoletos + ingresosTotalesPorSnacks)));
         }
         
-        System.out.println("\n--- REGISTRO DE VENTAS (Desde Archivo CSV: " + NOMBRE_ARCHIVO_CSV + ") ---");
-        File archivoCSV = new File(NOMBRE_ARCHIVO_CSV);
+        System.out.println("\n--- REGISTRO DE VENTAS (Desde Archivo CSV: " + archivoRegistro + ") ---");
+        File archivoCSV = new File(archivoRegistro);
         if (!archivoCSV.exists() || archivoCSV.length() == 0) {
-            System.out.println("El archivo de registro CSV '" + NOMBRE_ARCHIVO_CSV + "' esta vacio o no existe aun.");
+            System.out.println("El archivo de registro CSV '" + archivoRegistro + "' esta vacio o no existe aun.");
         } else {
             try (Scanner fileScanner = new Scanner(archivoCSV)) {
                 while (fileScanner.hasNextLine()) {
                     System.out.println(fileScanner.nextLine());
                 }
             } catch (FileNotFoundException e) {
-                System.out.println("Error al leer el archivo de registro CSV '" + NOMBRE_ARCHIVO_CSV + "'.");
+                System.out.println("Error al leer el archivo de registro CSV '" + archivoRegistro + "'.");
             }
         }
     }
