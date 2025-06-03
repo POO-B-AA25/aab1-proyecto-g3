@@ -34,16 +34,17 @@ public class VistaCineMas {
     SimpleDateFormat sdfDiaSemana = new SimpleDateFormat("EEEE", new Locale("es", "ES"));
     SimpleDateFormat sdfParaArchivo = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 
-    public static final String archivoRegistro = "registroVentas.txt";
+    public static final String NOMBRE_ARCHIVO_CSV = "registro_ventas_cine.csv";
 
     public static void main(String[] args) {
         VistaCineMas app = new VistaCineMas();
         app.cargarDatosIniciales();
+        app.crearEncabezadoCSVSIEsNecesario();
 
         Scanner scanner = new Scanner(System.in);
         boolean salir = false;
         System.out.println("========================================");
-        System.out.println("            Sistema de CineMas          ");
+        System.out.println("|           Sistema de CineMas         |");
         System.out.println("========================================");
 
         while (!salir) {
@@ -83,7 +84,7 @@ public class VistaCineMas {
         scanner.close();
     }
 
-    void mostrarMenuPrincipal() {
+    public void mostrarMenuPrincipal() {
         System.out.println("\n MENU PRINCIPAL ");
         System.out.println("1. Ver Peliculas en Cartelera");
         System.out.println("2. Comprar Boletos");
@@ -92,18 +93,24 @@ public class VistaCineMas {
         System.out.println("5. Salir");
     }
 
-    private void escribirFacturaEnArchivo(String datosFactura) {
-        try (FileWriter fileWriter = new FileWriter(archivoRegistro, true);
+    private void escribirLineaEnCSV(String datosCSV) {
+        try (FileWriter fileWriter = new FileWriter(NOMBRE_ARCHIVO_CSV, true);
              Formatter formatter = new Formatter(fileWriter)) {
-            formatter.format("%s%n", datosFactura);
-        } catch (FileNotFoundException e) {
-            System.err.println("Error: Archivo no encontrado para el registro: " + archivoRegistro + ". " + e.getMessage());
+            formatter.format("%s%n", datosCSV);
         } catch (IOException e) {
-            System.err.println("Error de E/S al escribir en el archivo de registro: " + e.getMessage());
+            System.err.println("Error de E/S al escribir en el archivo CSV: " + e.getMessage());
         }
     }
 
-    void cargarDatosIniciales() {
+    public void crearEncabezadoCSVSIEsNecesario() {
+        File csvFile = new File(NOMBRE_ARCHIVO_CSV);
+        if (!csvFile.exists() || csvFile.length() == 0) {
+            String encabezado = "FechaHoraTransaccion;TipoFactura;NumeroFactura;ClienteNombre;PeliculaTitulo;SalaNombre;HorarioFuncion;CantidadBoletos;PrecioUnitarioBoleto;SubtotalBoletos;PromocionDescripcion;DescuentoValor;SnackNombre;CantidadSnack;PrecioUnitarioSnack;SubtotalSnacks;TotalPagado";
+            escribirLineaEnCSV(encabezado);
+        }
+    }
+
+    public void cargarDatosIniciales() {
         List<String[]> datosClientes = new ArrayList<>();
         datosClientes.add(new String[]{"Carlos Solis", "carlos.solis@example.com", "0981234567"});
         datosClientes.add(new String[]{"Ana Paredes", "ana.paredes@example.net", "0992345678"});
@@ -124,10 +131,9 @@ public class VistaCineMas {
         listaPeliculas.add(new Pelicula("Garfield: Fuera de Casa", "El gato casero que odia los lunes esta a punto de vivir una salvaje aventura.", "Animacion", "ATP"));
         listaPeliculas.add(new Pelicula("Observados", "Una artista queda varada en un bosque en el oeste de Irlanda y es acechada por criaturas misteriosas.", "Terror", "Mayores de 16"));
         listaPeliculas.add(new Pelicula("Furiosa: De la saga Mad Max", "La joven Furiosa es arrebatada del Lugar Verde de Muchas Madres y cae en manos de una gran Horda de Motociclistas.", "Accion", "Mayores de 16"));
-        listaPeliculas.add(new Pelicula("Amigos Imaginarios", "Una niña descubre que puede ver a los amigos imaginarios de todo el mundo y se embarca en una aventura magica.", "Familiar", "ATP"));
+        listaPeliculas.add(new Pelicula("Amigos Imaginarios", "Una nina descubre que puede ver a los amigos imaginarios de todo el mundo y se embarca en una aventura magica.", "Familiar", "ATP"));
         listaPeliculas.add(new Pelicula("Hachiko 2: Siempre a tu lado", "La conmovedora historia de lealtad de un perro que espera a su dueño en la estacion, incluso despues de su muerte.", "Drama", "ATP"));
         listaPeliculas.add(new Pelicula("Kung Fu Panda 4", "Po se prepara para convertirse en el lider espiritual del Valle de la Paz, pero necesita encontrar un sucesor como Guerrero Dragon.", "Animacion", "ATP"));
-
 
         for (Pelicula pelicula : listaPeliculas) {
             peliculaControlador.agregarPelicula(pelicula);
@@ -178,7 +184,7 @@ public class VistaCineMas {
         }
     }
 
-    void verPeliculasEnCartelera() {
+    public void verPeliculasEnCartelera() {
         System.out.println("\n--- PELICULAS EN CARTELERA ---");
         List<Pelicula> peliculas = peliculaControlador.obtenerPeliculas();
         if (peliculas.isEmpty()) {
@@ -193,7 +199,7 @@ public class VistaCineMas {
         }
     }
 
-    void comprarBoletos(Scanner scanner) {
+    public void comprarBoletos(Scanner scanner) {
         System.out.println("\n--- COMPRAR BOLETOS ---");
         List<Cliente> clientesDisponibles = clienteControlador.obtenerClientes();
         Cliente clienteDeLaTransaccion = null;
@@ -276,24 +282,43 @@ public class VistaCineMas {
         FacturaFuncion factura = new FacturaFuncion(numFacturaFuncion, new Date(), clienteDeLaTransaccion, boletoVenta, promocionAplicada);
         facturaControlador.agregarFacturaFuncion(factura);
 
-        double descuentoValor = (factura.getPromocion() != null) ? (factura.getSubtotal() * factura.getPromocion().getPorcentajeDescuento()) : 0.0;
-        String registroTXTBoletos = String.format(Locale.US,"BOLETO;%s;%s;%s;%d;%.2f;%.2f;%.2f;%s",
-                factura.getNumero(),
-                factura.getCliente().getNombreApellidoCliente().replace(";", ","),
-                factura.getBoleto().getFuncion().getPelicula().getTitulo().replace(";", ","),
-                factura.getBoleto().getCantidad(),
-                factura.getSubtotal(),
-                descuentoValor,
-                factura.getValorTotal(),
-                sdfParaArchivo.format(factura.getFecha()));
-        escribirFacturaEnArchivo(registroTXTBoletos);
+        String fechaHoraRegistroCSV = sdfParaArchivo.format(factura.getFecha());
+        String clienteNombreCSV = factura.getCliente() != null ? factura.getCliente().getNombreApellidoCliente().replace(";", "").replace(",", " ") : "N/A";
+        String peliculaTituloCSV = factura.getBoleto().getFuncion().getPelicula().getTitulo().replace(";", "").replace(",", " ");
+        String salaNombreCSV = factura.getBoleto().getFuncion().getSala().getNombre().replace(";", "").replace(",", " ");
+        String horarioFuncionCSV = sdfFechaCompleta.format(funcionSeleccionada.getHorario().getFecha()) + " " + funcionSeleccionada.getHorario().getHora();
+        horarioFuncionCSV = horarioFuncionCSV.replace(";", "").replace(",", " ");
+        
+        double subtotalBoletosCSV = factura.getSubtotal();
+        double descuentoValorCSV = (factura.getPromocion() != null) ? (subtotalBoletosCSV * factura.getPromocion().getPorcentajeDescuento()) : 0.0;
+        String promocionDescCSV = (factura.getPromocion() != null ? factura.getPromocion().getDescripcionPromo().replace(";", "").replace(",", " ") : "Ninguna");
+        double totalPagadoCSV = factura.getValorTotal();
 
+        String lineaCSVBoletos = String.format(Locale.US, "%s;FACTURA_FUNCION;%s;%s;%s;%s;%s;%d;%.2f;%.2f;%s;%.2f;%s;%d;%.2f;%.2f;%.2f",
+                fechaHoraRegistroCSV,
+                factura.getNumero(),
+                clienteNombreCSV,
+                peliculaTituloCSV,
+                salaNombreCSV,
+                horarioFuncionCSV,
+                factura.getBoleto().getCantidad(),
+                factura.getBoleto().getPrecioUnitario(),
+                subtotalBoletosCSV,
+                promocionDescCSV,
+                descuentoValorCSV,
+                "N/A", 
+                0,     
+                0.0,   
+                0.0,   
+                totalPagadoCSV
+        );
+        escribirLineaEnCSV(lineaCSVBoletos);
 
         System.out.println("\n--- Factura de Boletos Generada ---");
         System.out.println("Numero: " + factura.getNumero());
-        System.out.println("Cliente: " + factura.getCliente().getNombreApellidoCliente());
-        System.out.println("Pelicula: " + factura.getBoleto().getFuncion().getPelicula().getTitulo());
-        System.out.println("Sala: " + factura.getBoleto().getFuncion().getSala().getNombre());
+        System.out.println("Cliente: " + clienteNombreCSV);
+        System.out.println("Pelicula: " + peliculaTituloCSV);
+        System.out.println("Sala: " + salaNombreCSV);
 
         Date fechaFuncionParaMostrar = null;
         String horaFuncionParaMostrar = funcionSeleccionada.getHorario().getHora();
@@ -303,15 +328,16 @@ public class VistaCineMas {
 
         System.out.println("Fecha y Hora de la Funcion: " + (fechaFuncionParaMostrar != null ? sdfDiaHora.format(fechaFuncionParaMostrar) : "N/A"));
         System.out.println("Cantidad de Boletos: " + factura.getBoleto().getCantidad());
-        System.out.println("Precio Unitario: $" + String.format("%.2f", factura.getBoleto().getPrecioUnitario()));
-        System.out.println("Subtotal: $" + String.format("%.2f", factura.getSubtotal()));
+        System.out.println("Precio Unitario: $" + String.format(Locale.US, "%.2f", factura.getBoleto().getPrecioUnitario()));
+        System.out.println("Subtotal: $" + String.format(Locale.US, "%.2f", subtotalBoletosCSV));
         if (factura.getPromocion() != null) {
-            System.out.println("Descuento ("+ factura.getPromocion().getDescripcionPromo() +"): -$" + String.format("%.2f", descuentoValor));
+            System.out.println("Descuento ("+ promocionDescCSV +"): -$" + String.format(Locale.US, "%.2f", descuentoValorCSV));
         }
-        System.out.println("Valor Total: $" + String.format("%.2f", factura.getValorTotal()));
+        System.out.println("Valor Total: $" + String.format(Locale.US, "%.2f", totalPagadoCSV));
+        System.out.println("Factura registrada en: " + NOMBRE_ARCHIVO_CSV);
     }
 
-    void comprarSnacks(Scanner scanner) {
+    public void comprarSnacks(Scanner scanner) {
         System.out.println("\n--- COMPRAR SNACKS ---");
         List<Cliente> clientesDisponibles = clienteControlador.obtenerClientes();
         Cliente clienteDeLaTransaccion = null;
@@ -334,7 +360,7 @@ public class VistaCineMas {
         System.out.println("Snacks Disponibles:");
         for (int i = 0; i < snacksCatalogo.size(); i++) {
             Snack s = snacksCatalogo.get(i);
-            System.out.println((i + 1) + ". " + s.getNombre() + " - $" + String.format("%.2f", s.getPrecio()));
+            System.out.println((i + 1) + ". " + s.getNombre() + " - $" + String.format(Locale.US, "%.2f", s.getPrecio()));
         }
 
         System.out.print("Seleccione el numero del snack: ");
@@ -376,27 +402,44 @@ public class VistaCineMas {
         FacturaSnack factura = new FacturaSnack(numFacturaSnack, new Date(), clienteDeLaTransaccion, snackParaFactura);
         facturaControlador.agregarFacturaSnack(factura);
 
-        String registroTXTSnacks = String.format(Locale.US, "SNACK;%s;%s;%s;%d;%.2f;0.00;%.2f;%s",
+        String fechaHoraRegistroCSV = sdfParaArchivo.format(factura.getFecha());
+        String clienteNombreCSV = factura.getCliente() != null ? factura.getCliente().getNombreApellidoCliente().replace(";", "").replace(",", " ") : "N/A";
+        String snackNombreCSV = factura.getSnack().getNombre().replace(";", "").replace(",", " ");
+        double subtotalSnacksCSV = factura.getSnack().getPrecio() * factura.getSnack().getCantidad();
+        double totalPagadoCSV = factura.calcularValorTotal();
+
+        String lineaCSVSnacks = String.format(Locale.US, "%s;FACTURA_SNACK;%s;%s;%s;%s;%s;%d;%.2f;%.2f;%s;%.2f;%s;%d;%.2f;%.2f;%.2f",
+                fechaHoraRegistroCSV,
                 factura.getNumero(),
-                factura.getCliente().getNombreApellidoCliente().replace(";", ","),
-                factura.getSnack().getNombre().replace(";", ","),
+                clienteNombreCSV,
+                "N/A", 
+                "N/A", 
+                "N/A", 
+                0,     
+                0.0,   
+                0.0,   
+                "Ninguna", 
+                0.0,   
+                snackNombreCSV,
                 factura.getSnack().getCantidad(),
-                factura.getSnack().getPrecio() * factura.getSnack().getCantidad(),
-                factura.calcularValorTotal(),
-                sdfParaArchivo.format(factura.getFecha()));
-        escribirFacturaEnArchivo(registroTXTSnacks);
+                factura.getSnack().getPrecio(),
+                subtotalSnacksCSV,
+                totalPagadoCSV
+        );
+        escribirLineaEnCSV(lineaCSVSnacks);
 
         System.out.println("\n--- Factura de Snacks Generada ---");
         System.out.println("Numero: " + factura.getNumero());
-        System.out.println("Cliente: " + factura.getCliente().getNombreApellidoCliente());
-        System.out.println("Snack: " + factura.getSnack().getNombre());
+        System.out.println("Cliente: " + clienteNombreCSV);
+        System.out.println("Snack: " + snackNombreCSV);
         System.out.println("Cantidad: " + factura.getSnack().getCantidad());
-        System.out.println("Precio Unitario: $" + String.format("%.2f", factura.getSnack().getPrecio()));
-        System.out.println("Valor Total: $" + String.format("%.2f", factura.calcularValorTotal()));
+        System.out.println("Precio Unitario: $" + String.format(Locale.US, "%.2f", factura.getSnack().getPrecio()));
+        System.out.println("Valor Total: $" + String.format(Locale.US, "%.2f", totalPagadoCSV));
+        System.out.println("Factura registrada en: " + NOMBRE_ARCHIVO_CSV);
     }
 
-    void verRegistroDeVentas() {
-        System.out.println("\n--- REGISTRO DE VENTAS ---");
+    public void verRegistroDeVentas() {
+        System.out.println("\n--- REGISTRO DE VENTAS (Desde Memoria) ---");
 
         List<FacturaFuncion> facturasFuncion = facturaControlador.obtenerFacturasFuncion();
         List<FacturaSnack> facturasSnack = facturaControlador.obtenerFacturasSnack();
@@ -407,9 +450,9 @@ public class VistaCineMas {
         double ingresosTotalesPorSnacks = 0.0;
 
         if (facturasFuncion.isEmpty() && facturasSnack.isEmpty()) {
-            System.out.println("Aun no se han realizado ventas.");
+            System.out.println("Aun no se han realizado ventas en memoria.");
         } else {
-            System.out.println("\n--- Resumen de Ventas de Boletos ---");
+            System.out.println("\n--- Resumen de Ventas de Boletos (Memoria) ---");
             if (facturasFuncion.isEmpty()) {
                 System.out.println("No se han vendido boletos.");
             } else {
@@ -420,19 +463,19 @@ public class VistaCineMas {
                     ingresosTotalesPorBoletos += ff.getValorTotal();
                 }
                 System.out.println("Total de Boletos Vendidos: " + totalBoletosVendidos);
-                System.out.println("Ingresos Totales por Boletos: $" + String.format("%.2f", ingresosTotalesPorBoletos));
+                System.out.println("Ingresos Totales por Boletos: $" + String.format(Locale.US, "%.2f", ingresosTotalesPorBoletos));
 
-                System.out.println("\nDetalle de Facturas de Boletos:");
+                System.out.println("\nDetalle de Facturas de Boletos (Memoria):");
                 for(FacturaFuncion ff : facturasFuncion) {
                     System.out.println("  Factura No: " + ff.getNumero() +
                                        ", Cliente: " + (ff.getCliente() != null ? ff.getCliente().getNombreApellidoCliente() : "N/A") +
                                        ", Pelicula: " + (ff.getBoleto() != null && ff.getBoleto().getFuncion() != null && ff.getBoleto().getFuncion().getPelicula() != null ? ff.getBoleto().getFuncion().getPelicula().getTitulo() : "N/A") +
                                        ", Cant: " + (ff.getBoleto() != null ? ff.getBoleto().getCantidad() : 0) +
-                                       ", Total: $" + String.format("%.2f", ff.getValorTotal()));
+                                       ", Total: $" + String.format(Locale.US, "%.2f", ff.getValorTotal()));
                 }
             }
 
-            System.out.println("\n--- Resumen de Ventas de Snacks ---");
+            System.out.println("\n--- Resumen de Ventas de Snacks (Memoria) ---");
             if (facturasSnack.isEmpty()) {
                 System.out.println("No se han vendido snacks.");
             } else {
@@ -443,32 +486,34 @@ public class VistaCineMas {
                     ingresosTotalesPorSnacks += fs.getValorTotal();
                 }
                 System.out.println("Total de Items de Snacks Vendidos: " + totalItemsSnacksVendidos);
-                System.out.println("Ingresos Totales por Snacks: $" + String.format("%.2f", ingresosTotalesPorSnacks));
+                System.out.println("Ingresos Totales por Snacks: $" + String.format(Locale.US, "%.2f", ingresosTotalesPorSnacks));
 
-                System.out.println("\nDetalle de Facturas de Snacks:");
+                System.out.println("\nDetalle de Facturas de Snacks (Memoria):");
                 for(FacturaSnack fs : facturasSnack) {
                      System.out.println("  Factura No: " + fs.getNumero() +
                                        ", Cliente: " + (fs.getCliente() != null ? fs.getCliente().getNombreApellidoCliente() : "N/A") +
                                        ", Snack: " + (fs.getSnack() != null ? fs.getSnack().getNombre() : "N/A") +
                                        ", Cant: " + (fs.getSnack() != null ? fs.getSnack().getCantidad() : 0) +
-                                       ", Total: $" + String.format("%.2f", fs.getValorTotal()));
+                                       ", Total: $" + String.format(Locale.US, "%.2f", fs.getValorTotal()));
                 }
             }
 
             System.out.println("\n--- Totales Generales (Desde Memoria) ---");
-            System.out.println("Ingresos Totales (Boletos + Snacks): $" + String.format("%.2f", (ingresosTotalesPorBoletos + ingresosTotalesPorSnacks)));
+            System.out.println("Ingresos Totales (Boletos + Snacks): $" + String.format(Locale.US, "%.2f", (ingresosTotalesPorBoletos + ingresosTotalesPorSnacks)));
         }
         
-        System.out.println("\n--- REGISTRO DE VENTAS (Desde Archivo: " + archivoRegistro + ") ---");
-        try (Scanner fileScanner = new Scanner(new File(archivoRegistro))) {
-            if (!fileScanner.hasNextLine()) {
-                System.out.println("El archivo de registro '" + archivoRegistro + "' esta vacio o no existe aun.");
+        System.out.println("\n--- REGISTRO DE VENTAS (Desde Archivo CSV: " + NOMBRE_ARCHIVO_CSV + ") ---");
+        File archivoCSV = new File(NOMBRE_ARCHIVO_CSV);
+        if (!archivoCSV.exists() || archivoCSV.length() == 0) {
+            System.out.println("El archivo de registro CSV '" + NOMBRE_ARCHIVO_CSV + "' esta vacio o no existe aun.");
+        } else {
+            try (Scanner fileScanner = new Scanner(archivoCSV)) {
+                while (fileScanner.hasNextLine()) {
+                    System.out.println(fileScanner.nextLine());
+                }
+            } catch (FileNotFoundException e) {
+                System.out.println("Error al leer el archivo de registro CSV '" + NOMBRE_ARCHIVO_CSV + "'.");
             }
-            while (fileScanner.hasNextLine()) {
-                System.out.println(fileScanner.nextLine());
-            }
-        } catch (FileNotFoundException e) {
-            System.out.println("El archivo de registro '" + archivoRegistro + "' no se ha creado aun o no se puede encontrar.");
         }
     }
 }
