@@ -51,7 +51,7 @@ public class FacturaSnack {
 
     public void setSnack(Snack snack) {
         this.snack = snack;
-        // Recalcular si el snack cambia
+        
         this.subtotal = calcularSubtotalInterno();
         this.valorTotal = calcularValorTotalInterno();
     }
