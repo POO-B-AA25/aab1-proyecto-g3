@@ -6,10 +6,10 @@ import java.util.ArrayList;
 import java.text.SimpleDateFormat;
 
 public class Horario {
-    private Date fecha;
-    private String hora;
-    private List<Pelicula> peliculas;
-    private List<Sala> salas;
+    public Date fecha;
+    public String hora;
+    public List<Pelicula> peliculas;
+    public List<Sala> salas;
 
     public Horario() {
         peliculas = new ArrayList<>();
@@ -60,6 +60,7 @@ public class Horario {
 
     @Override
     public String toString() {
+        
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
         StringBuilder sb = new StringBuilder();
 

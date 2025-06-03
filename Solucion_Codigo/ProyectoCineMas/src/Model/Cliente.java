@@ -1,9 +1,9 @@
 package Model;
 
 public class Cliente {
-    private String nombreApellidoCliente;
-    private String email;
-    private String telefono;
+    public String nombreApellidoCliente;
+    public String email;
+    public String telefono;
 
     public Cliente() {}
 

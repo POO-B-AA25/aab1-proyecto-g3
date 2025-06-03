@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class FuncionControlador {
-    private List<Funcion> funciones;
+    public List<Funcion> funciones;
 
     public FuncionControlador() {
         funciones = new ArrayList<>();

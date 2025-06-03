@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PeliculaControlador {
-    private List<Pelicula> peliculas;
+    public List<Pelicula> peliculas;
 
     public PeliculaControlador() {
         peliculas = new ArrayList<>();

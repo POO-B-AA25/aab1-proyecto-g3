@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FacturaControlador {
-    private List<FacturaFuncion> facturasFuncion;
-    private List<FacturaSnack> facturasSnack;
+    public List<FacturaFuncion> facturasFuncion;
+    public List<FacturaSnack> facturasSnack;
 
     public FacturaControlador() {
         facturasFuncion = new ArrayList<>();

@@ -6,7 +6,7 @@ import java.util.List;
 
 public class ClienteControlador {
     
-    private List<Cliente> clientes;
+    public List<Cliente> clientes;
 
     public ClienteControlador() {
         clientes = new ArrayList<>();

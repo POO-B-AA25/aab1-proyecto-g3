@@ -5,9 +5,9 @@ import java.text.SimpleDateFormat;
 import java.util.Locale; 
 
 public class Promocion {
-    private String descripcionPromo;
-    private String diaAplica; 
-    private double porcentajeDescuento; 
+    public String descripcionPromo;
+    public String diaAplica; 
+    public double porcentajeDescuento; 
 
     public Promocion() {}
 

@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PromocionControlador {
-    private List<Promocion> promociones;
+    public List<Promocion> promociones;
 
     public PromocionControlador() {
         promociones = new ArrayList<>();
