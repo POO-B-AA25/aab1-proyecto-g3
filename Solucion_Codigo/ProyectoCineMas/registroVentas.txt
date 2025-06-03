@@ -1,0 +1,4 @@
+BOLETO;FF-1;Sofia Castillo;Bad Boys: Hasta la Muerte;3;25.50;5.10;25.50;02/06/2025 20:26:14
+SNACK;FS-1;Luis Guzman;Popcorn Grande;2;11.00;0.00;11.00;02/06/2025 20:36:25
+BOLETO;FF-1;Jorge Luna;Observados;2;17.00;0.00;17.00;02/06/2025 20:37:00
+BOLETO;FF-2;Carlos Solis;Intensamente 2;3;25.50;5.10;20.40;02/06/2025 20:37:12
